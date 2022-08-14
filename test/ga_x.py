@@ -11,13 +11,13 @@ def genetic_algorithm_t(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate)
 
     def new_generation_t(Problem_Genetic,k,opt,population,n_parents,n_directs,prob_mutate):
         def tournament_selection(Problem_Genetic,population,n,k,opt):
-            winners=[]
+            winners = []
             for _ in range(n):
                 elements = random.sample(population,k)
                 winners.append(opt(elements,key=Problem_Genetic.fitness))
             return winners
 
-        def cross_parents(Problem_Genetic,parents):
+        def cross_parents(Problem_Genetic, parents):
             childs=[]
             for i in range(0,len(parents),2):
                 childs.extend(Problem_Genetic.crossover(parents[i],parents[i+1]))
@@ -47,5 +47,5 @@ def genetic_algorithm_t(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate)
     bestChromosome = opt(population, key = Problem_Genetic.fitness)
     print("Chromosome: ", bestChromosome)
     genotype = Problem_Genetic.decode(bestChromosome)
-    print("Solution: " , (genotype,Problem_Genetic.fitness(bestChromosome)))
+    print("Solution: ", (genotype,Problem_Genetic.fitness(bestChromosome)))
     return (genotype,Problem_Genetic.fitness(bestChromosome))

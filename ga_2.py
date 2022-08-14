@@ -241,8 +241,8 @@ def genetic_algorithm_t2(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate
     return (genotype,Problem_Genetic.fitness(bestChromosome) + dictionary[(str(bestChromosome))]*50)
 
 def VRP(k):
-    VRP_PROBLEM = Problem_Genetic([(0,10),(1,10),(2,10),(3,10),(4,10),(5,10),(6,10),(7,10), (trucks[0],capacity_trucks)],
-                                    len(cities),
+    VRP_PROBLEM = Problem_Genetic(city_demand_with_truck_tuple,
+                                    len(cities), #correct
                                     lambda x : decodeVRP(x),
                                     lambda y: fitnessVRP(y))
     
@@ -279,23 +279,60 @@ def VRP(k):
     print("-------------------------------------------------------------------------------------------------------------------------------------------------------")
     second_part_GA(k)
 
-cities = {0:'Almeria', 1:'Cadiz', 2:'Cordoba', 3:'Granada', 4:'Huelva', 5:'Jaen', 6:'Malaga', 7:'Sevilla'}
+# cities = {0:'Almeria', 1:'Cadiz', 2:'Cordoba', 3:'Granada', 4:'Huelva', 5:'Jaen', 6:'Malaga', 7:'Sevilla'}
+
+
+import numpy as np
+import pandas as pd
+import math
+
+# Find euclidean distance of a and b
+# a, b must be a tuple of location ie. x, y
+
+def euclidean_dist(a, b):
+    return round(math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2))
+
+# city_position_demand = pd.read_excel('simple.xlsx').to_numpy()
+city_position_demand = pd.read_excel('A-n32-k5.xlsx').to_numpy()
+    
+n_node = len(city_position_demand)
+#print("Total Nodes:", n_node)
+
+
+print('city_position_demand', city_position_demand)
+
+position = city_position_demand[:, 1:3]
+demand = city_position_demand[:, 3]
+city_demand = [(i, city_position_demand[i, 3]) for i in range(len(city_position_demand))]
+print('city_demand',city_demand)
+
+
+
+
+dist_table = np.zeros((n_node, n_node))
+for i in range(n_node):
+    for j in range(n_node):
+        if i == j:
+            dist_table[i,j] = 999
+        else:
+            dist_table[i,j] = euclidean_dist(position[i], position[j])
+
+cities = {i: 'City No.' + str(i) for i in range(n_node)}
 print('cities', cities)
 #Distance between each pair of cities
-w0 = [999,454,317,165,528,222,223,410]
-w1 = [453,999,253,291,210,325,234,121]
-w2 = [317,252,999,202,226,108,158,140]
-w3 = [165,292,201,999,344,94,124,248]
-w4 = [508,210,235,346,999,336,303,94]
-w5 = [222,325,116,93,340,999,182,247]
-w6 = [223,235,158,125,302,185,999,206]
-w7 = [410,121,141,248,93,242,199,999]
-distances = {0:w0, 1:w1, 2:w2, 3:w3, 4:w4, 5:w5, 6:w6, 7:w7}
+
+distances = {i: dist_table[i,:].tolist() for i in range(n_node)}
 print('distances', distances)
-capacity_trucks = 60
+
+capacity_trucks = 100#60
 trucks = ['truck', 'truck']
 num_trucks = len(trucks)
 frontier = "---------"
+
+
+city_demand.append((trucks[0], capacity_trucks))
+city_demand_with_truck_tuple = list(map(tuple, city_demand))
+print('city_demand_with_truck_tuple', city_demand_with_truck_tuple)
 
 if __name__ == "__main__":
     genetic_problem_instances = 10

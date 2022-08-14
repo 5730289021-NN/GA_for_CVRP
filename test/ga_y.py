@@ -59,8 +59,8 @@ def genetic_algorithm_t2(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate
                 dictionary[crom] = 1
         return new_generation
 
-    population = initial_population(Problem_Genetic, size )
-    n_parents= round(size*ratio_cross)
+    population = initial_population(Problem_Genetic, size)
+    n_parents = round(size*ratio_cross)
     n_parents = (n_parents if n_parents%2==0 else n_parents-1)
     n_directs = size - n_parents
 

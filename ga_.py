@@ -96,7 +96,8 @@ def fitnessVRP(chromosome):
 
     def distanceTrip(index,city):
         w = distances.get(index)
-        return w[city]
+        # print('currentcity', city-2)
+        return w[city-2]
 
     actualChromosome = chromosome
     fitness_value = 0
@@ -104,10 +105,11 @@ def fitnessVRP(chromosome):
     penalty_cap = penalty_capacity(actualChromosome)
     for (key,value) in actualChromosome:
         if key not in trucks:
-            nextCity_tuple = actualChromosome[key]
+            # print('Currentkey:', key-1)
+            nextCity_tuple = actualChromosome[key-1]
             if list(nextCity_tuple)[0] not in trucks:
                 nextCity= list(nextCity_tuple)[0]
-                fitness_value+= distanceTrip(key,nextCity) + (50 * penalty_cap)
+                fitness_value+= distanceTrip(key-1,nextCity) + (50 * penalty_cap)
     return fitness_value
 
 #program 197
@@ -241,8 +243,8 @@ def genetic_algorithm_t2(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate
     return (genotype,Problem_Genetic.fitness(bestChromosome) + dictionary[(str(bestChromosome))]*50)
 
 def VRP(k):
-    VRP_PROBLEM = Problem_Genetic([(0,10),(1,10),(2,10),(3,10),(4,10),(5,10),(6,10),(7,10), (trucks[0],capacity_trucks)],
-                                    len(cities),
+    VRP_PROBLEM = Problem_Genetic(tuple(map(tuple, city_demand.transpose())),
+                                    len(cities) - 1, #correct
                                     lambda x : decodeVRP(x),
                                     lambda y: fitnessVRP(y))
     
@@ -264,7 +266,7 @@ def VRP(k):
         print ("---------------------------------------------------------Executing SECOND PART: VRP --------------------------------------------------------- \n")
         print("Capacity of trucks = ", capacity_trucks)
         print("Frontier = ", frontier)
-        print("")
+        print("")c
 
         cont = 0
         tiempo_inicial_t2 = time()
@@ -279,20 +281,63 @@ def VRP(k):
     print("-------------------------------------------------------------------------------------------------------------------------------------------------------")
     second_part_GA(k)
 
-cities = {0:'Almeria', 1:'Cadiz', 2:'Cordoba', 3:'Granada', 4:'Huelva', 5:'Jaen', 6:'Malaga', 7:'Sevilla'}
+# cities = {0:'Almeria', 1:'Cadiz', 2:'Cordoba', 3:'Granada', 4:'Huelva', 5:'Jaen', 6:'Malaga', 7:'Sevilla'}
+
+
+import numpy as np
+import pandas as pd
+import math
+
+# Find euclidean distance of a and b
+# a, b must be a tuple of location ie. x, y
+
+def euclidean_dist(a, b):
+    return round(math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2))
+
+depot_param = np.array([[33, 1, -1, 0]]) # index, x, y, demand
+city_position_demand = np.concatenate((pd.read_excel('A-n32-k5.xlsx').to_numpy(), depot_param))
+print('city_position_demand', city_position_demand)
+
+position = city_position_demand[:, 1:3]
+demand = city_position_demand[:, 3]
+city_demand = np.concatenate((city_position_demand[:,0].reshape(1, len(city_position_demand[:,0])), 
+                              city_position_demand[:,3].reshape(1, len(city_position_demand[:,0]))), axis=0)
+print('city_demand',city_demand.transpose())
+
+
+n_node = len(city_position_demand)
+#print("Total Nodes:", n_node)
+
+
+dist_table = np.zeros((n_node, n_node))
+for i in range(n_node):
+    for j in range(n_node):
+        if i == j:
+            dist_table[i,j] = 999
+        else:
+            dist_table[i,j] = euclidean_dist(position[i], position[j])
+
+cities = {i: str(i+1)+'x' for i in range(n_node)}
+
+
+
 print('cities', cities)
 #Distance between each pair of cities
-w0 = [999,454,317,165,528,222,223,410]
-w1 = [453,999,253,291,210,325,234,121]
-w2 = [317,252,999,202,226,108,158,140]
-w3 = [165,292,201,999,344,94,124,248]
-w4 = [508,210,235,346,999,336,303,94]
-w5 = [222,325,116,93,340,999,182,247]
-w6 = [223,235,158,125,302,185,999,206]
-w7 = [410,121,141,248,93,242,199,999]
-distances = {0:w0, 1:w1, 2:w2, 3:w3, 4:w4, 5:w5, 6:w6, 7:w7}
+
+# w0 = [999,454,317,165,528,222,223,410]
+# w1 = [453,999,253,291,210,325,234,121]
+# w2 = [317,252,999,202,226,108,158,140]
+# w3 = [165,292,201,999,344,94,124,248]
+# w4 = [508,210,235,346,999,336,303,94]
+# w5 = [222,325,116,93,340,999,182,247]
+# w6 = [223,235,158,125,302,185,999,206]
+# w7 = [410,121,141,248,93,242,199,999]
+# distances = {0:w0, 1:w1, 2:w2, 3:w3, 4:w4, 5:w5, 6:w6, 7:w7}
+
+distances = {i: dist_table[i,0:-1] for i in range(n_node)}
 print('distances', distances)
-capacity_trucks = 60
+
+capacity_trucks = 100#60
 trucks = ['truck', 'truck']
 num_trucks = len(trucks)
 frontier = "---------"
