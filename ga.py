@@ -114,7 +114,7 @@ def fitnessVRP(chromosome):
 def genetic_algorithm_t(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate):
 
     def initial_population(Problem_Genetic,size): 
-        def generate_chromosome():
+        def generate_chromosome(): # this function generate list of chromosome.
             chromosome=[]
             for i in Problem_Genetic.genes:
                 chromosome.append(i)
@@ -149,7 +149,7 @@ def genetic_algorithm_t(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate)
 
         return new_generation
 
-    population = initial_population(Problem_Genetic, size)
+    population = initial_population(Problem_Genetic, size) # Create population ie 
     n_parents = round(size*ratio_cross)
     n_parents = (n_parents if n_parents%2==0 else n_parents-1)
     n_directs = size - n_parents
@@ -241,7 +241,10 @@ def genetic_algorithm_t2(Problem_Genetic,k,opt,ngen,size,ratio_cross,prob_mutate
     return (genotype,Problem_Genetic.fitness(bestChromosome) + dictionary[(str(bestChromosome))]*50)
 
 def VRP(k):
-    VRP_PROBLEM = Problem_Genetic([(0,10),(1,10),(2,10),(3,10),(4,10),(5,10),(6,10),(7,10),(trucks[0],capacity_trucks)], len(cities), lambda x : decodeVRP(x), lambda y: fitnessVRP(y))
+    VRP_PROBLEM = Problem_Genetic([(0,10),(1,10),(2,10),(3,10),(4,10),(5,10),(6,10),(7,10), (trucks[0],capacity_trucks)],
+                                    len(cities),
+                                    lambda x : decodeVRP(x),
+                                    lambda y: fitnessVRP(y))
     
     def first_part_GA(k):
         cont = 0
