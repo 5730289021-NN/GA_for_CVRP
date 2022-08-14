@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import math
-
+import pygad
 
 # Find euclidean distance of a and b
 # a, b must be a tuple of location ie. x, y
@@ -13,11 +13,7 @@ def euclidean_dist(a, b):
 depot_param = np.array([[0, 1, -1, 0]]) # index, x, y, demand
 
 # Read from csv
-#city_position_demand = np.concatenate((depot_param, pd.read_csv('A-n32-k5.csv').to_numpy()))
-
-# Read from excel 
-# [Required] pip3 install openpyxl
-city_position_demand = np.concatenate((depot_param, pd.read_excel('A-n32-k5.xlsx').to_numpy()))
+city_position_demand = np.concatenate((depot_param, pd.read_csv('A-n32-k5.csv').to_numpy()))
 # print(city_position_demand)
 
 position = city_position_demand[:, 1:3]
@@ -41,3 +37,4 @@ for i in range(n_node):
             dist_table[i,j] = euclidean_dist(position[i], position[j])
 
 np.savetxt('t1.csv', dist_table, delimiter=",", fmt='%d')
+
