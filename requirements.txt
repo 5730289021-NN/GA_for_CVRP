@@ -1,0 +1,9 @@
+cspy>=1.0.1
+networkx>=2.8.6
+numpy>=1.23.2
+PuLP>=2.6.0
+vrpy>=0.5.1
+pandas>=1.4.3
+openpyxl>=3.0.10
+matplotlib>=3.53
+pygad>=2.17.0
